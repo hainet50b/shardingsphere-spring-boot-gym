@@ -1,0 +1,28 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  shardingsphere:
+    datasource:
+      names: ds0
+      ds0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: org.h2.Driver
+        url: jdbc:h2:mem:pmacho-db;mode=MySQL
+        username: sa
+        password:
+    rules:
+      sharding:
+        tables:
+          emp:
+            actual-data-nodes: ds0.emp$->{0..1}
+            table-strategy:
+              standard:
+                sharding-column: id
+                sharding-algorithm-name: table-inline
+        sharding-algorithms:
+          table-inline:
+            type: INLINE
+            props:
+              algorithm-expression: emp${id % 2}
