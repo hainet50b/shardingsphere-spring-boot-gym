@@ -5,24 +5,38 @@ spring:
       path: /h2-console
   shardingsphere:
     datasource:
-      names: ds0
+      names: ds0,ds1
       ds0:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: org.h2.Driver
-        url: jdbc:h2:mem:pmacho-db;mode=MySQL
+        url: jdbc:h2:mem:pmacho_db;mode=MySQL
+        username: sa
+        password:
+      ds1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: org.h2.Driver
+        url: jdbc:h2:mem:protein_db;mode=MySQL
         username: sa
         password:
     rules:
       sharding:
         tables:
           emp:
-            actual-data-nodes: ds0.emp$->{0..1}
+            actual-data-nodes: ds$->{0..1}.emp$->{0..2}
+            database-strategy:
+              standard:
+                sharding-column: id
+                sharding-algorithm-name: database-inline
             table-strategy:
               standard:
                 sharding-column: id
                 sharding-algorithm-name: table-inline
         sharding-algorithms:
+          database-inline:
+            type: INLINE
+            props:
+              algorithm-expression: ds${id % 2}
           table-inline:
             type: INLINE
             props:
-              algorithm-expression: emp${id % 2}
+              algorithm-expression: emp${id % 3}

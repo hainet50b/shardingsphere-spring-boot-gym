@@ -1,0 +1,5 @@
+### findAll
+GET http://localhost:8080/emp
+
+### insert
+POST http://localhost:8080/emp
